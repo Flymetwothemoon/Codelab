@@ -3,6 +3,9 @@ package com.example.codelab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,9 +16,8 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,10 +34,9 @@ class MainActivity : ComponentActivity() {
             CodelabTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MyApp()
+                    MyApp(Modifier.fillMaxSize())
 
                 }
             }
@@ -68,10 +69,16 @@ fun OpenningUI(
 }
 @Composable
 fun Greeting(name: String) {
-    var expanded = remember {
+    var expanded by rememberSaveable {
         mutableStateOf(false)
     }
-    val paddingBottom = if(expanded.value)48.dp else 0.dp
+    val extraPending by animateDpAsState(if(expanded)48.dp else 0.dp,
+    animationSpec = spring(
+        dampingRatio = Spring.DampingRatioMediumBouncy,
+        stiffness = Spring.StiffnessLow
+    )
+    )
+//    val paddingBottom = if(expanded)48.dp else 0.dp
     Surface( color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ,shape = RoundedCornerShape(8.dp)
@@ -79,16 +86,16 @@ fun Greeting(name: String) {
 
         Row(modifier = Modifier
             .padding(24.dp)
-            .padding(bottom = paddingBottom)) {
+            .padding(bottom = extraPending.coerceAtLeast(0.dp))) {
             Column(modifier = Modifier
                 .weight(1f)) {
                 Text("hello")
                 Text(text = name)
 
             }
-            ElevatedButton( onClick = { expanded.value = !expanded.value },
+            ElevatedButton( onClick = { expanded = !expanded },
             ) {
-                Text(if (expanded.value) "Show less" else "Show more")
+                Text(if (expanded) "Show less" else "Show more")
             }
         }
 
@@ -96,15 +103,12 @@ fun Greeting(name: String) {
 
 }
 @Composable
-private fun MyApp(modifier: Modifier = Modifier, names:List<String> = listOf("1","2","3","4"
-,"5","6","7","8","9")) {
-    var IfTounch = remember {
-        mutableStateOf(false)
-    }
+private fun MyApp(modifier: Modifier = Modifier, names:List<String> = List(1000){"$it"}) {
+    var IfTounch = rememberSaveable { mutableStateOf(false) }
     if(IfTounch.value){
     Surface(
     ) {
-        LazyColumn(modifier = modifier.padding(vertical = 8.dp)) {
+        LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
             items(names) { name ->
                 Greeting(name = name)
             }
@@ -115,6 +119,7 @@ private fun MyApp(modifier: Modifier = Modifier, names:List<String> = listOf("1"
         OpenningUI(onContinueClicked = {IfTounch.value = !IfTounch.value })
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
