@@ -1,1 +1,13 @@
 1:' by remember '和 '= remember'是两种,'by remember'用了之后不能写'.value'.而'= remember'用了之后必须写'.value'
+2:'rememberSaveable'与'remember',我之前用来保存按钮被按的状态用的是‘remember’但是出现了问题,比如我用lazycolumn展示1-100个数,从第6个数开始,就不和前5个数在一个界面里面了,按下第一个数的按钮,然后往下滑,滑完之后再往回去滑,结果第一个数用变回原来的状态。
+remember 函数仅在可组合项包含在组合中时起作用。旋转屏幕后，整个 activity 都会重启，所有状态都将丢失。当发生任何配置更改或者进程终止时，也会出现这种情况。
+而rememberSaveable则有效的解决了这个问题。这会保存每个在配置更改（如旋转）和进程终止后保留下来的状态。
+3:dampingRatio参数指定了阻尼比，用于控制动画停止后的回弹效果，取值范围为0到1。值越大，回弹次数越少，回弹的幅度也越小。
+
+  stiffness参数指定了弹性系数，用于控制动画的速度和振幅。值越大，动画的振幅越小，速度越快
+
+4:coerceAtLeast 是一个扩展函数，用于将一个数值调整为不小于给定值的最小值
+5:如果您返回 MainActivity.kt 并刷新预览，预览颜色实际上并不会改变！这是因为，您的预览将默认使用动态配色。您可以在 Theme.kt 中查看使用 dynamicColor 布尔值参数添加动态配色的逻辑。
+wod解决办法就是不断改变Theme.kt 中的 dynamicColor的true和false
+6:shape = RoundedCornerShape(8.dp)设置卡片圆角
+7:想要改变button的图标用IconButton通过改变Icon里面的参数实现
